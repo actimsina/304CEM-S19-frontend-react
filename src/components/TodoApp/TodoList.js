@@ -2,6 +2,11 @@ import React, { Component } from 'react'
 import { Table, Button } from 'reactstrap'
 
 export default class TodoList extends Component {
+
+    handleDelete = (taskId) => {
+        this.props.handleTodoDelete(taskId)
+    }
+
     render() {
         const { tasks } = this.props
         return (
@@ -15,7 +20,8 @@ export default class TodoList extends Component {
                                     <Button size='sm' color='warning'>Edit</Button>
                                 </td>
                                 <td>
-                                    <Button size='sm' color='danger'>Delete</Button>
+                                    <Button size='sm' color='danger'
+                                        onClick={() => this.handleDelete(task._id)}>Delete</Button>
                                 </td>
                             </tr>)
                         })

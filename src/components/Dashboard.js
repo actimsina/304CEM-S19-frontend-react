@@ -56,6 +56,16 @@ export default class Dashboard extends Component {
             })
     }
 
+    handleTodoDelete = (taskId) => {
+        const filteredTask = this.state.tasks.filter((task) => {
+            return task._id !== taskId
+        })
+        this.setState({
+            tasks: filteredTask
+        })
+        Axios.delete(`http://localhost:3001/tasks/${taskId}`, this.state.config)
+    }
+
     handleLogout = (e) => {
         e.preventDefault();
         localStorage.removeItem('token');
@@ -70,7 +80,9 @@ export default class Dashboard extends Component {
                     handleCurrentTodoChange={this.handleCurrentTodoChange}
                     handleTodoSubmit={this.handleTodoSubmit}
                 />
-                <TodoList tasks={this.state.tasks} />
+
+                <TodoList tasks={this.state.tasks}
+                    handleTodoDelete={this.handleTodoDelete} />
             </Container>
         )
     }

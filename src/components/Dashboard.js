@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import TodoForm from './TodoApp/TodoForm';
 import TodoList from './TodoApp/TodoList';
 import Axios from 'axios';
+import TodoEdit from './TodoApp/TodoEdit';
 
 export default class Dashboard extends Component {
 
@@ -16,7 +17,9 @@ export default class Dashboard extends Component {
             currentTodo: '',
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            }
+            },
+            showEdit: false,
+            task: {}
         }
     }
 
@@ -66,6 +69,19 @@ export default class Dashboard extends Component {
         Axios.delete(`http://localhost:3001/tasks/${taskId}`, this.state.config)
     }
 
+    handleTodoEdit = (taskId) => {
+        this.setState({
+            task: this.state.tasks.find((task) => task._id === taskId),
+            showEdit: !this.state.showEdit
+        })
+    }
+
+    toggle = () => {
+        this.setState({
+            showEdit: !this.state.showEdit
+        })
+    }
+
     handleLogout = (e) => {
         e.preventDefault();
         localStorage.removeItem('token');
@@ -82,7 +98,10 @@ export default class Dashboard extends Component {
                 />
 
                 <TodoList tasks={this.state.tasks}
-                    handleTodoDelete={this.handleTodoDelete} />
+                    handleTodoDelete={this.handleTodoDelete}
+                    handleTodoEdit={this.handleTodoEdit} />
+
+                <TodoEdit showEdit={this.state.showEdit} toggle={this.toggle} task={this.state.task} />
             </Container>
         )
     }

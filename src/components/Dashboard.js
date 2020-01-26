@@ -82,6 +82,20 @@ export default class Dashboard extends Component {
         })
     }
 
+    updateTask = (taskId, taskName, taskDone) => {
+        const updatedTasks = this.state.tasks.map((task) => {
+            if (task._id === taskId) {
+                task.name = taskName
+                task.done = taskDone
+            }
+            return task;
+        })
+        this.setState({
+            tasks: updatedTasks
+        })
+        Axios.put(`http://localhost:3001/tasks/${taskId}`, { name: taskName, done: taskDone }, this.state.config)
+    }
+
     handleLogout = (e) => {
         e.preventDefault();
         localStorage.removeItem('token');
@@ -101,7 +115,9 @@ export default class Dashboard extends Component {
                     handleTodoDelete={this.handleTodoDelete}
                     handleTodoEdit={this.handleTodoEdit} />
 
-                <TodoEdit showEdit={this.state.showEdit} toggle={this.toggle} task={this.state.task} />
+                <TodoEdit showEdit={this.state.showEdit} toggle={this.toggle} task={this.state.task}
+                    updateTask={this.updateTask}
+                />
             </Container>
         )
     }

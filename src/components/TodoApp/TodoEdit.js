@@ -1,9 +1,41 @@
 import React, { Component } from 'react'
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Form, FormGroup, Label } from 'reactstrap'
 
 export default class TodoEdit extends Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            updatedTaskName: '',
+            updatedTaskDone: false
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({
+            updatedTaskName: newProps.task.name,
+            updatedTaskDone: newProps.task.done
+        })
+    }
+
+
+    handleChange = (e) => {
+        const value = (e.target.type === 'checkbox') ? e.target.checked : e.target.value
+
+        this.setState({
+            [e.target.name]: value
+        })
+    }
+
+
+
+    handleSubmit = (e) => {
+        this.props.toggle();
+        this.props.updateTask(this.props.task._id, this.state.updatedTaskName, this.state.updatedTaskDone);
+    }
+
     render() {
-        const { showEdit, toggle, task } = this.props
+        const { showEdit, toggle } = this.props
         return (
             <div>
                 <Modal isOpen={showEdit} toggle={toggle}>
@@ -11,10 +43,22 @@ export default class TodoEdit extends Component {
                         Edit task
                     </ModalHeader>
                     <ModalBody>
-                        {task.name}
+                        <Form onSubmit={this.handleSubmit}>
+                            <FormGroup>
+                                <Input type='text' name='updatedTaskName'
+                                    value={this.state.updatedTaskName}
+                                    onChange={this.handleChange} />
+                                <Label for='check' className='ml-4'>
+                                    <Input type='checkbox' name='updatedTaskDone'
+                                        checked={this.state.updatedTaskDone}
+                                        onChange={this.handleChange} /> {' '}
+                                    is Done?
+                                </Label>
+                            </FormGroup>
+                        </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color='primary' onClick={toggle}>Save</Button>
+                        <Button color='primary' onClick={this.handleSubmit}>Save</Button>
                     </ModalFooter>
                 </Modal>
             </div>

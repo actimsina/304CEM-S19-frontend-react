@@ -2,42 +2,16 @@ import React, { Component } from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Form, FormGroup, Label } from 'reactstrap'
 
 export default class TodoEdit extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            updatedTaskName: '',
-            updatedTaskDone: false
-        }
-    }
-
-    componentWillReceiveProps(newProps) {
-        this.setState({
-            updatedTaskName: newProps.task.name,
-            updatedTaskDone: newProps.task.done
-        })
-    }
-
-
-    handleChange = (e) => {
-        const value = (e.target.type === 'checkbox') ? e.target.checked : e.target.value
-
-        this.setState({
-            [e.target.name]: value
-        })
-    }
-
-
 
     handleSubmit = (e) => {
         this.props.toggle();
-        this.props.updateTask(this.props.task._id, this.state.updatedTaskName, this.state.updatedTaskDone);
+        this.props.updateTask(this.props.task);
     }
 
     render() {
-        const { showEdit, toggle } = this.props
+        const { showEdit, toggle, task } = this.props
         return (
-            <div>
+            <React.Fragment>
                 <Modal isOpen={showEdit} toggle={toggle}>
                     <ModalHeader toggle={toggle}>
                         Edit task
@@ -45,13 +19,13 @@ export default class TodoEdit extends Component {
                     <ModalBody>
                         <Form onSubmit={this.handleSubmit}>
                             <FormGroup>
-                                <Input type='text' name='updatedTaskName'
-                                    value={this.state.updatedTaskName}
-                                    onChange={this.handleChange} />
+                                <Input type='text'
+                                    value={task.name}
+                                    onChange={(e) => this.props.handleTaskNameChange(e.target.value)} />
                                 <Label for='check' className='ml-4'>
-                                    <Input type='checkbox' name='updatedTaskDone'
-                                        checked={this.state.updatedTaskDone}
-                                        onChange={this.handleChange} /> {' '}
+                                    <Input type='checkbox'
+                                        checked={task.done}
+                                        onChange={(e) => this.props.handleTaskDoneChange(e.target.checked)} /> {' '}
                                     is Done?
                                 </Label>
                             </FormGroup>
@@ -61,7 +35,7 @@ export default class TodoEdit extends Component {
                         <Button color='primary' onClick={this.handleSubmit}>Save</Button>
                     </ModalFooter>
                 </Modal>
-            </div>
+            </React.Fragment>
         )
     }
 }

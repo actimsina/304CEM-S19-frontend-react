@@ -1,16 +1,51 @@
 import React, { Component } from 'react'
-import { Table, Button } from 'reactstrap'
+import { Table } from 'reactstrap'
+import TodoEdit from './TodoEdit'
+import TodoItem from './TodoItem'
 
 export default class TodoList extends Component {
 
-    handleDelete = (taskId) => {
-        this.props.handleTodoDelete(taskId)
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            showEdit: false,
+            config: {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            },
+            task: {}
+        }
     }
 
     handleEdit = (taskId) => {
-        this.props.handleTodoEdit(taskId)
+        this.setState({
+            task: this.props.tasks.find((task) => {
+                return task._id === taskId
+            })
+        })
+        this.toggle();
     }
 
+    toggle = () => {
+        this.setState({
+            showEdit: !this.state.showEdit
+        })
+    }
+
+    handleTaskNameChange = (taskName) => {
+        this.setState({
+            task: { ...this.state.task, name: taskName }
+        })
+    }
+
+    handleTaskDoneChange = (isDone) => {
+        this.setState({
+            task: { ...this.state.task, done: isDone }
+        })
+    }
+    updateTask = (updatedTask) => {
+        this.props.updateTask(updatedTask)
+    }
     render() {
         const { tasks } = this.props
         return (
@@ -19,24 +54,21 @@ export default class TodoList extends Component {
                     <tbody>
                         {
                             tasks.map((task) => {
-                                return (<tr key={task._id}>
-                                    <td>
-                                        {
-                                            (task.done) ? <del>{task.name}</del> : <span>{task.name}</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <Button size='sm' color='warning' onClick={() => this.handleEdit(task._id)}>Edit</Button>
-                                    </td>
-                                    <td>
-                                        <Button size='sm' color='danger'
-                                            onClick={() => this.handleDelete(task._id)}>Delete</Button>
-                                    </td>
-                                </tr>)
+                                return <TodoItem key={task._id} task={task}
+                                    handleDelete={this.props.handleTodoDelete}
+                                    handleEdit={this.handleEdit} />
                             })
                         }
                     </tbody>
                 </Table>
+
+                <TodoEdit showEdit={this.state.showEdit} toggle={this.toggle}
+                    task={this.state.task}
+                    handleTaskNameChange={this.handleTaskNameChange}
+                    handleTaskDoneChange={this.handleTaskDoneChange}
+                    updateTask={this.updateTask}
+
+                />
             </div>
         )
     }

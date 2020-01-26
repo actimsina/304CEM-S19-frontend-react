@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import TodoForm from './TodoApp/TodoForm';
 import TodoList from './TodoApp/TodoList';
 import Axios from 'axios';
-import TodoEdit from './TodoApp/TodoEdit';
 
 export default class Dashboard extends Component {
 
@@ -17,9 +16,7 @@ export default class Dashboard extends Component {
             currentTodo: '',
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            },
-            showEdit: false,
-            task: {}
+            }
         }
     }
 
@@ -82,18 +79,29 @@ export default class Dashboard extends Component {
         })
     }
 
-    updateTask = (taskId, taskName, taskDone) => {
+    updateTask = (updatedTask) => {
         const updatedTasks = this.state.tasks.map((task) => {
-            if (task._id === taskId) {
-                task.name = taskName
-                task.done = taskDone
+            if (task._id === updatedTask._id) {
+                task = updatedTask
             }
             return task;
         })
         this.setState({
             tasks: updatedTasks
         })
-        Axios.put(`http://localhost:3001/tasks/${taskId}`, { name: taskName, done: taskDone }, this.state.config)
+        Axios.put(`http://localhost:3001/tasks/${updatedTask._id}`,
+            { name: updatedTask.name, done: updatedTask.done },
+            this.state.config).then((response) => console.log(response.data));
+    }
+
+    handleTaskChange = (e) => {
+        const value = (e.target.type === 'checkbox') ? e.target.checked : e.target.value
+
+        this.setState({
+            updateTask: {
+                [e.target.name]: value
+            }
+        })
     }
 
     handleLogout = (e) => {
@@ -113,11 +121,8 @@ export default class Dashboard extends Component {
 
                 <TodoList tasks={this.state.tasks}
                     handleTodoDelete={this.handleTodoDelete}
-                    handleTodoEdit={this.handleTodoEdit} />
-
-                <TodoEdit showEdit={this.state.showEdit} toggle={this.toggle} task={this.state.task}
-                    updateTask={this.updateTask}
-                />
+                    handleTodoEdit={this.handleTodoEdit}
+                    updateTask={this.updateTask} />
             </Container>
         )
     }

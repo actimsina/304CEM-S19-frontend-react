@@ -13,7 +13,8 @@ export default class UserProfile extends Component {
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             },
-            selectedFile: null
+            selectedFile: null,
+            uploadedImage: ''
 
         }
     }
@@ -45,8 +46,11 @@ export default class UserProfile extends Component {
                 console.log(response.data)
 
                 this.setState({
-                    user: { ...this.state.user, image: response.data.filename }
+                    user: { ...this.state.user, image: response.data.filename },
+                    uploadedImage: response.data.filename
                 })
+
+
             }).catch((err) => console.log(err.response))
     }
 
@@ -67,7 +71,7 @@ export default class UserProfile extends Component {
                         <Button color='primary' onClick={this.uploadFile}>Upload</Button>
                     </FormGroup>
 
-
+                    <img src={`http://localhost:3001/uploads/${this.state.user.image}`} alt="profile image" />
                     <Button color='danger' onClick={this.updateUser}>Update User</Button>
                 </Form>
             </div>

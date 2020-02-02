@@ -33,8 +33,9 @@ class Navigation extends Component {
     render() {
         return (
             <div>
-                Welcome <Link to='/profile'> {this.state.user.username} </Link>
-                <Button color='link' onClick={this.handleLogout}> Logout</Button>
+                <Link to='/dashboard'>Dashboard</Link>
+                <Link to='/profile'> Profile </Link>
+                <Button color='warning' onClick={this.handleLogout}> Logout</Button>
             </div>
         )
     }

@@ -42,7 +42,7 @@ export default class Dashboard extends Component {
         Axios.post('http://localhost:3001/tasks', { name: this.state.currentTodo },
             this.state.config).then((response) => {
                 this.setState({
-                    tasks: [response.data, ...this.state.tasks],
+                    tasks: [...this.state.tasks, response.data],
                     currentTodo: ''
                 })
             })
@@ -56,19 +56,6 @@ export default class Dashboard extends Component {
             tasks: filteredTask
         })
         Axios.delete(`http://localhost:3001/tasks/${taskId}`, this.state.config)
-    }
-
-    handleTodoEdit = (taskId) => {
-        this.setState({
-            task: this.state.tasks.find((task) => task._id === taskId),
-            showEdit: !this.state.showEdit
-        })
-    }
-
-    toggle = () => {
-        this.setState({
-            showEdit: !this.state.showEdit
-        })
     }
 
     updateTask = (updatedTask) => {
@@ -86,32 +73,20 @@ export default class Dashboard extends Component {
             this.state.config).then((response) => console.log(response.data));
     }
 
-    handleTaskChange = (e) => {
-        const value = (e.target.type === 'checkbox') ? e.target.checked : e.target.value
-
-        this.setState({
-            updateTask: {
-                [e.target.name]: value
-            }
-        })
-    }
-
-
     render() {
         return (
-            <Container>
+            <React.Fragment>
                 <Navigation />
-
-                <TodoForm currentTodo={this.state.currentTodo}
-                    handleCurrentTodoChange={this.handleCurrentTodoChange}
-                    handleTodoSubmit={this.handleTodoSubmit}
-                />
-
-                <TodoList tasks={this.state.tasks}
-                    handleTodoDelete={this.handleTodoDelete}
-                    handleTodoEdit={this.handleTodoEdit}
-                    updateTask={this.updateTask} />
-            </Container>
+                <Container className='mt-4'>
+                    <TodoForm currentTodo={this.state.currentTodo}
+                        handleCurrentTodoChange={this.handleCurrentTodoChange}
+                        handleTodoSubmit={this.handleTodoSubmit}
+                    />
+                    <TodoList tasks={this.state.tasks}
+                        handleTodoDelete={this.handleTodoDelete}
+                        updateTask={this.updateTask} />
+                </Container>
+            </React.Fragment>
         )
     }
 }

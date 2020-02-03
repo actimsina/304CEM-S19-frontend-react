@@ -1,28 +1,14 @@
 import React, { Component } from 'react'
-import Axios from 'axios'
-import { Button } from 'reactstrap'
-import { Link, withRouter } from 'react-router-dom'
+import { Button, Navbar, Nav, NavbarBrand, NavbarToggler, Collapse, NavItem, NavLink } from 'reactstrap'
+import { withRouter } from 'react-router-dom'
 
 class Navigation extends Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            user: {},
-            config: {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            }
+            isOpen: false
         }
-    }
-
-
-    componentDidMount() {
-        Axios.get('http://localhost:3001/users/me', this.state.config)
-            .then((response) => {
-                this.setState({
-                    user: response.data
-                })
-            });
     }
 
     handleLogout = (e) => {
@@ -30,13 +16,30 @@ class Navigation extends Component {
         localStorage.removeItem('token');
         this.props.history.push('/')
     }
+    toggle = () => {
+        this.setState({
+            isOpen: !this.state.isOpen
+        })
+    }
     render() {
         return (
-            <div>
-                <Link to='/dashboard'>Dashboard</Link>
-                <Link to='/profile'> Profile </Link>
-                <Button color='warning' onClick={this.handleLogout}> Logout</Button>
-            </div>
+            <Navbar color='dark' dark expand='md'>
+                <NavbarBrand href='/dashboard'>Todo App</NavbarBrand>
+                <NavbarToggler onClick={this.toggle} />
+                <Collapse isOpen={this.state.isOpen} navbar>
+                    <Nav className='mr-auto' navbar>
+                        <NavItem>
+                            <NavLink href='/dashboard'>Dashboard</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href='/profile'>Profile</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <Button color='warning' onClick={this.handleLogout}> Logout</Button>
+                        </NavItem>
+                    </Nav>
+                </Collapse>
+            </Navbar>
         )
     }
 }

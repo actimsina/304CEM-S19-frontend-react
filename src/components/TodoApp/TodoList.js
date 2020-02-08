@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { Table } from 'reactstrap'
-import TodoEdit from './TodoEdit'
 import TodoItem from './TodoItem'
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Form, FormGroup, Label, ListGroup, ListGroupItem } from 'reactstrap'
+import Axios from 'axios'
 
 export default class TodoList extends Component {
 
@@ -13,7 +14,8 @@ export default class TodoList extends Component {
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             },
-            task: {}
+            task: {},
+            noteText: ''
         }
     }
 
@@ -38,37 +40,92 @@ export default class TodoList extends Component {
         })
     }
 
-    handleTaskDoneChange = (isDone) => {
-        this.setState({
-            task: { ...this.state.task, done: isDone }
-        })
-    }
+
     updateTask = (updatedTask) => {
         this.props.updateTask(updatedTask)
+    }
+
+    handleNoteTextChange = (e) => {
+        this.setState({
+            noteText: e.target.value
+        })
+    }
+
+    handleNoteSubmit = (e) => {
+        e.preventDefault();
+        Axios.post(`http://localhost:3001/tasks/${this.state.task._id}/notes`,
+            { desc: this.state.noteText }, this.state.config)
+            .then((response) => {
+                this.setState({
+                    task: response.data,
+                    noteText: ''
+                })
+            }).catch((err) => console.log(err))
+    }
+
+    handleNoteDelete = (noteId) => {
+        Axios.delete(`http://localhost:3001/tasks/${this.state.task._id}/notes/${noteId}`,
+            this.state.config).then((response) => {
+                console.log(response.data)
+                this.setState({
+                    task: response.data
+                })
+            })
     }
     render() {
         const { tasks } = this.props
         return (
             <div>
-                <Table>
-                    <tbody>
+                <ListGroup>
+                    {
+                        tasks.map((task) => {
+                            return <TodoItem key={task._id} task={task}
+                                handleDelete={this.props.handleTodoDelete}
+                                handleEdit={this.handleEdit}
+                            />
+                        })
+                    }
+                </ListGroup>
+                <Modal isOpen={this.state.showEdit} toggle={this.toggle}>
+                    <ModalHeader toggle={this.toggle}>
+                        Edit task
+                    </ModalHeader>
+                    <ModalBody>
+                        <Form onSubmit={() => this.props.updateTask(this.state.task)}>
+                            <Input type='text'
+                                value={this.state.task.name}
+                                onChange={(e) => this.handleTaskNameChange(e.target.value)} />
+                        </Form>
+
+
+
+                        <Form onSubmit={this.handleNoteSubmit}>
+                            <FormGroup>
+                                <Input type='text' placeholder='add notes'
+                                    value={this.state.noteText}
+                                    onChange={this.handleNoteTextChange}
+                                />
+                            </FormGroup>
+                        </Form>
+
+
                         {
-                            tasks.map((task) => {
-                                return <TodoItem key={task._id} task={task}
-                                    handleDelete={this.props.handleTodoDelete}
-                                    handleEdit={this.handleEdit} />
-                            })
+                            (this.state.task.notes) ? (
+                                <ListGroup flush>
+                                    {this.state.task.notes.map((note) => {
+                                        return (<ListGroupItem key={note._id}
+                                            className='d-flex justify-content-between align-items-center'>
+                                            {note.desc} <Button size='sm' color='danger' onClick={() => this.handleNoteDelete(note._id)} >X</Button>
+                                        </ListGroupItem>)
+                                    })}
+                                </ListGroup>) : null
                         }
-                    </tbody>
-                </Table>
 
-                <TodoEdit showEdit={this.state.showEdit} toggle={this.toggle}
-                    task={this.state.task}
-                    handleTaskNameChange={this.handleTaskNameChange}
-                    handleTaskDoneChange={this.handleTaskDoneChange}
-                    updateTask={this.updateTask}
-
-                />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color='primary' onClick={this.toggle}>Exit</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         )
     }

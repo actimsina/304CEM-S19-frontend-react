@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container } from 'reactstrap';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -10,7 +9,7 @@ import UserProfile from './components/UserProfile';
 
 function App() {
   return (
-    <Container>
+    <React.Fragment>
       <BrowserRouter>
         <Switch>
           <Route exact path='/' component={Login} />
@@ -22,8 +21,7 @@ function App() {
           </Route>
         </Switch>
       </BrowserRouter>
-
-    </Container>
+    </React.Fragment>
   );
 }
 

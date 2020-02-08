@@ -105,7 +105,7 @@ export default class Dashboard extends Component {
             taskId: task._id,
             taskName: task.name,
             taskDone: task.done,
-            isEdit: true
+            isEdit: !this.state.isEdit
         })
     }
 

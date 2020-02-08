@@ -11,8 +11,12 @@ export default class Dashboard extends Component {
         super(props)
 
         this.state = {
+
+            taskId: '',
+            taskName: '',
+            taskDone: false,
+            isEdit: false,
             tasks: [],
-            currentTodo: '',
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             }
@@ -29,48 +33,80 @@ export default class Dashboard extends Component {
             })
     }
 
-    handleCurrentTodoChange = (newTodo) => {
+    handleTaskNameChange = (taskName) => {
         this.setState({
-            currentTodo: newTodo
+            taskName: taskName
         })
     }
 
-    handleTodoSubmit = (e) => {
-        e.preventDefault();
-        if (!this.state.currentTodo) return;
+    handleTaskDoneChange = (isDone) => {
+        this.setState({
+            taskDone: isDone
+        })
+    }
 
-        Axios.post('http://localhost:3001/tasks', { name: this.state.currentTodo },
+    handleTaskSubmit = (e) => {
+        e.preventDefault();
+        if (!this.state.taskName) return;
+
+        Axios.post('http://localhost:3001/tasks',
+            {
+                name: this.state.taskName,
+                done: this.state.taskDone
+            },
             this.state.config).then((response) => {
                 this.setState({
                     tasks: [...this.state.tasks, response.data],
-                    currentTodo: ''
+                    taskName: ''
                 })
             })
     }
 
-    handleTodoDelete = (taskId) => {
-        const filteredTask = this.state.tasks.filter((task) => {
-            return task._id !== taskId
-        })
-        this.setState({
-            tasks: filteredTask
-        })
+    handleTaskDelete = (taskId) => {
+
         Axios.delete(`http://localhost:3001/tasks/${taskId}`, this.state.config)
+            .then((response) => {
+                const filteredTask = this.state.tasks.filter((task) => {
+                    return task._id !== taskId
+                })
+                this.setState({
+                    tasks: filteredTask,
+                    isEdit: false
+                })
+            })
     }
 
-    updateTask = (updatedTask) => {
-        const updatedTasks = this.state.tasks.map((task) => {
-            if (task._id === updatedTask._id) {
-                task = updatedTask
-            }
-            return task;
-        })
+    handleTaskUpdate = (e) => {
+        e.preventDefault();
+        Axios.put(`http://localhost:3001/tasks/${this.state.taskId}`,
+            { name: this.state.taskName, done: this.state.taskDone },
+            this.state.config)
+            .then((response) => {
+                console.log(response.data);
+                const updatedTasks = this.state.tasks.map((task) => {
+                    if (task._id === response.data._id) {
+                        task = response.data
+                    }
+                    return task;
+                })
+                this.setState({
+                    tasks: updatedTasks,
+                    taskName: '',
+                    taskDone: false,
+                    taskId: '',
+                    isEdit: false
+                })
+            }).catch((err) => console.log(err.response));
+    }
+
+
+    itemClick = (task) => {
         this.setState({
-            tasks: updatedTasks
+            taskId: task._id,
+            taskName: task.name,
+            taskDone: task.done,
+            isEdit: true
         })
-        Axios.put(`http://localhost:3001/tasks/${updatedTask._id}`,
-            { name: updatedTask.name, done: updatedTask.done },
-            this.state.config).then((response) => console.log(response.data));
     }
 
     render() {
@@ -78,13 +114,18 @@ export default class Dashboard extends Component {
             <React.Fragment>
                 <Navigation />
                 <Container className='mt-4'>
-                    <TodoForm currentTodo={this.state.currentTodo}
-                        handleCurrentTodoChange={this.handleCurrentTodoChange}
-                        handleTodoSubmit={this.handleTodoSubmit}
+                    <TodoForm taskName={this.state.taskName}
+                        taskDone={this.state.taskDone}
+                        isEdit={this.state.isEdit}
+                        handleTaskNameChange={this.handleTaskNameChange}
+                        handleTaskDoneChange={this.handleTaskDoneChange}
+                        handleTaskAdd={this.handleTaskSubmit}
+                        handleTaskUpdate={this.handleTaskUpdate}
                     />
                     <TodoList tasks={this.state.tasks}
-                        handleTodoDelete={this.handleTodoDelete}
-                        updateTask={this.updateTask} />
+                        handleTaskDelete={this.handleTaskDelete}
+                        itemClick={this.itemClick}
+                    />
                 </Container>
             </React.Fragment>
         )

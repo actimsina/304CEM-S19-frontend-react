@@ -1,20 +1,32 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, FormGroup } from 'reactstrap'
+import { Form, Input, Button, FormGroup, Label } from 'reactstrap'
 
 export default class TodoForm extends Component {
 
 
     render() {
-        const { currentTodo, handleCurrentTodoChange, handleTodoSubmit } = this.props
+        const { isEdit, taskName, taskDone, handleTaskNameChange,
+            handleTaskDoneChange, handleTaskAdd, handleTaskUpdate } = this.props
         return (
             <div>
-                <Form onSubmit={handleTodoSubmit}>
+                <Form onSubmit={handleTaskAdd}>
                     <FormGroup>
-                        <Input type='text' placeholder='add todo'
-                            value={currentTodo}
-                            onChange={(e) => handleCurrentTodoChange(e.target.value)} />
+                        <Input type='text' placeholder='add task'
+                            value={taskName}
+                            onChange={(e) => handleTaskNameChange(e.target.value)} />
+                        <Label for='check' className='ml-4 mt-2'>
+                            <Input type='checkbox' id='check'
+                                checked={taskDone}
+                                onChange={(e) => handleTaskDoneChange(e.target.checked)} /> {' '} is Done?
+                        </Label>
                     </FormGroup>
-                    <Button block color='primary'>Add</Button>
+                    {
+                        (isEdit) ? <Button color='success' block
+                            onClick={handleTaskUpdate}>Update</Button> :
+                            <Button color='primary' block
+                                onClick={handleTaskAdd}>Add</Button>
+                    }
+
                 </Form>
             </div>
         )

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Form, FormGroup, ListGroup, ListGroupItem } from 'reactstrap'
+import { Modal, ModalHeader, ModalBody, Button, Input, Form, FormGroup, ListGroup, ListGroupItem } from 'reactstrap'
 import Axios from 'axios'
 
 export default class NotesModal extends Component {
@@ -62,14 +62,6 @@ export default class NotesModal extends Component {
                         {this.state.task.name}
                     </ModalHeader>
                     <ModalBody>
-                        <Form onSubmit={this.handleNoteSubmit}>
-                            <FormGroup>
-                                <Input type='text' placeholder='add notes'
-                                    value={this.state.noteDesc}
-                                    onChange={this.handleNoteDescChange}
-                                />
-                            </FormGroup>
-                        </Form>
 
                         {
                             (this.state.task.notes) ? (
@@ -78,15 +70,21 @@ export default class NotesModal extends Component {
                                         return (<ListGroupItem key={note._id}
                                             className='d-flex justify-content-between align-items-center'>
                                             {note.desc}
-                                            <Button size='sm' color='danger' onClick={() => this.handleNoteDelete(note._id)} >X</Button>
+                                            <Button size='sm' color='danger' onClick={() => this.handleNoteDelete(note._id)} >Del</Button>
                                         </ListGroupItem>)
                                     })}
                                 </ListGroup>) : null
                         }
+
+                        <Form onSubmit={this.handleNoteSubmit}>
+                            <FormGroup>
+                                <Input type='text' placeholder='add notes'
+                                    value={this.state.noteDesc}
+                                    onChange={this.handleNoteDescChange}
+                                />
+                            </FormGroup>
+                        </Form>
                     </ModalBody>
-                    <ModalFooter>
-                        <Button color='primary' onClick={toggle}>Exit</Button>
-                    </ModalFooter>
                 </Modal>
             </div>
         )

@@ -11,7 +11,6 @@ export default class Dashboard extends Component {
         super(props)
 
         this.state = {
-
             taskId: '',
             taskName: '',
             taskDone: false,
@@ -26,7 +25,6 @@ export default class Dashboard extends Component {
     componentDidMount() {
         Axios.get('http://localhost:3001/tasks', this.state.config)
             .then((response) => {
-                console.log(response.data)
                 this.setState({
                     tasks: response.data
                 })
@@ -63,15 +61,13 @@ export default class Dashboard extends Component {
     }
 
     handleTaskDelete = (taskId) => {
-
         Axios.delete(`http://localhost:3001/tasks/${taskId}`, this.state.config)
             .then((response) => {
                 const filteredTask = this.state.tasks.filter((task) => {
                     return task._id !== taskId
                 })
                 this.setState({
-                    tasks: filteredTask,
-                    isEdit: false
+                    tasks: filteredTask
                 })
             })
     }
@@ -102,12 +98,21 @@ export default class Dashboard extends Component {
 
     itemClick = (task) => {
         this.setState({
+            isEdit: !this.state.isEdit,
             taskId: task._id,
             taskName: task.name,
-            taskDone: task.done,
-            isEdit: !this.state.isEdit
+            taskDone: task.done
         })
+
+        if (this.state.isEdit) {
+            this.setState({
+                taskId: '',
+                taskName: '',
+                taskDone: false
+            })
+        }
     }
+
 
     render() {
         return (

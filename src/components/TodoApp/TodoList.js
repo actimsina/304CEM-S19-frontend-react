@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import TodoItem from './TodoItem'
-import Axios from 'axios'
 import NotesModal from './NotesModal'
 import { ListGroup } from 'reactstrap'
 
@@ -32,7 +31,7 @@ export default class TodoList extends Component {
     }
 
     render() {
-        const { tasks, handleTaskDelete } = this.props
+        const { tasks, handleTaskDelete, itemClick } = this.props
         return (
             <div>
                 <ListGroup className='mt-4'>
@@ -41,7 +40,7 @@ export default class TodoList extends Component {
                             return <TodoItem key={task._id} task={task}
                                 handleTaskDelete={handleTaskDelete}
                                 showNotes={this.showNotes}
-                                itemClick={this.props.itemClick}
+                                itemClick={itemClick}
                             />
                         })
                     }

@@ -8,11 +8,12 @@ export default class TodoItem extends Component {
     render() {
         const { task, itemClick, showNotes, handleTaskDelete } = this.props
         return (
-            <ListGroupItem onClick={() => itemClick(task)} className='d-flex justify-content-between align-items-center'>
-
-                {
-                    (task.done) ? <del>{task.name}</del> : <span>{task.name}</span>
-                }
+            <ListGroupItem className='d-flex justify-content-between align-items-center'>
+                <div onClick={() => itemClick(task)}>
+                    {
+                        (task.done) ? <del>{task.name}</del> : <span>{task.name}</span>
+                    }
+                </div>
 
                 <span>
                     <Button size='sm' color='info' onClick={() => showNotes(task._id)}>Notes</Button>

@@ -16,6 +16,8 @@ export default class Dashboard extends Component {
             taskDone: false,
             isEdit: false,
             tasks: [],
+            categories: [],
+            categoryId: '',
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             }
@@ -28,7 +30,14 @@ export default class Dashboard extends Component {
                 this.setState({
                     tasks: response.data
                 })
-            })
+            }).catch((err) => console.log(err.response))
+        Axios.get('http://localhost:3001/categories', this.state.config)
+            .then((response) => {
+                this.setState({
+                    categories: response.data,
+                    categoryId: response.data[0]._id
+                })
+            }).catch((err) => console.log(err.response))
     }
 
     handleTaskNameChange = (taskName) => {
@@ -50,7 +59,8 @@ export default class Dashboard extends Component {
         Axios.post('http://localhost:3001/tasks',
             {
                 name: this.state.taskName,
-                done: this.state.taskDone
+                done: this.state.taskDone,
+                category: this.state.categoryId
             },
             this.state.config).then((response) => {
                 this.setState({
@@ -75,10 +85,13 @@ export default class Dashboard extends Component {
     handleTaskUpdate = (e) => {
         e.preventDefault();
         Axios.put(`http://localhost:3001/tasks/${this.state.taskId}`,
-            { name: this.state.taskName, done: this.state.taskDone },
+            {
+                name: this.state.taskName,
+                done: this.state.taskDone,
+                category: this.state.categoryId
+            },
             this.state.config)
             .then((response) => {
-                console.log(response.data);
                 const updatedTasks = this.state.tasks.map((task) => {
                     if (task._id === response.data._id) {
                         task = response.data
@@ -101,18 +114,25 @@ export default class Dashboard extends Component {
             isEdit: !this.state.isEdit,
             taskId: task._id,
             taskName: task.name,
-            taskDone: task.done
+            taskDone: task.done,
+            categoryId: task.category._id
         })
 
         if (this.state.isEdit) {
             this.setState({
                 taskId: '',
                 taskName: '',
-                taskDone: false
+                taskDone: false,
+
             })
         }
     }
 
+    handleCategoryChange = (e) => {
+        this.setState({
+            categoryId: e.target.value
+        })
+    }
 
     render() {
         return (
@@ -122,10 +142,13 @@ export default class Dashboard extends Component {
                     <TodoForm taskName={this.state.taskName}
                         taskDone={this.state.taskDone}
                         isEdit={this.state.isEdit}
+                        categoryId={this.state.categoryId}
+                        categories={this.state.categories}
                         handleTaskNameChange={this.handleTaskNameChange}
                         handleTaskDoneChange={this.handleTaskDoneChange}
                         handleTaskAdd={this.handleTaskSubmit}
                         handleTaskUpdate={this.handleTaskUpdate}
+                        handleCategoryChange={this.handleCategoryChange}
                     />
                     <TodoList tasks={this.state.tasks}
                         handleTaskDelete={this.handleTaskDelete}

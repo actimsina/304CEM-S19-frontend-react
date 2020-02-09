@@ -5,8 +5,8 @@ export default class TodoForm extends Component {
 
 
     render() {
-        const { isEdit, taskName, taskDone, handleTaskNameChange,
-            handleTaskDoneChange, handleTaskAdd, handleTaskUpdate } = this.props
+        const { isEdit, taskName, taskDone, categories, categoryId, handleTaskNameChange,
+            handleTaskDoneChange, handleTaskAdd, handleTaskUpdate, handleCategoryChange } = this.props
         return (
             <div>
                 <Form onSubmit={handleTaskAdd}>
@@ -19,6 +19,18 @@ export default class TodoForm extends Component {
                                 checked={taskDone}
                                 onChange={(e) => handleTaskDoneChange(e.target.checked)} /> {' '} is Done?
                         </Label>
+
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label for='category'>Category</Label>
+                        <Input type='select' id='category' value={categoryId} onChange={handleCategoryChange}>
+                            {
+                                categories.map((category) => {
+                                    return <option key={category._id} value={category._id}>{category.name}</option>
+                                })
+                            }
+                        </Input>
                     </FormGroup>
                     {
                         (isEdit) ? <Button color='success' block

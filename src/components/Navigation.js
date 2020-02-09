@@ -23,13 +23,16 @@ class Navigation extends Component {
     }
     render() {
         return (
-            <Navbar color='dark' dark expand='md'>
+            <Navbar color='dark' dark expand='md' className='mb-4'>
                 <NavbarBrand href='/dashboard'>Todo App</NavbarBrand>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar>
                     <Nav className='mr-auto' navbar>
                         <NavItem>
                             <NavLink href='/dashboard'>Dashboard</NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink href='/category'>Category</NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href='/profile'>Profile</NavLink>

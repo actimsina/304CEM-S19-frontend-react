@@ -6,7 +6,7 @@ import PrivateRoute from './utils/PrivateRoute';
 import Dashboard from './components/Dashboard';
 import NoMatch from './components/NoMatch';
 import UserProfile from './components/UserProfile';
-import Category from './components/TodoApp/Category'
+import Category from './components/Category'
 
 function App() {
   return (

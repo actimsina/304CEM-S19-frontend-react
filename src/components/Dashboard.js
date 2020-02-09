@@ -114,8 +114,14 @@ export default class Dashboard extends Component {
             isEdit: !this.state.isEdit,
             taskId: task._id,
             taskName: task.name,
-            taskDone: task.done,
-            categoryId: task.category._id
+            taskDone: task.done
+        })
+        if (task.category) {
+            this.setState({
+                categoryId: task.category._id
+            })
+        } else this.setState({
+            categoryId: this.state.categories[0]._id
         })
 
         if (this.state.isEdit) {

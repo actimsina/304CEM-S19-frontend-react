@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Navigation from '../Navigation'
+import Navigation from './Navigation'
 import { Form, FormGroup, Input, Container, ListGroup, ListGroupItem, Button } from 'reactstrap'
 import Axios from 'axios'
 

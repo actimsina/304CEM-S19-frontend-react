@@ -9,14 +9,13 @@ export default class Category extends Component {
         super(props)
 
         this.state = {
+            categoryId: '',
             categoryName: '',
             categories: [],
+            isUpdate: false,
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            },
-            isUpdate: false,
-            categoryId: ''
-
+            }
         }
     }
 
@@ -78,7 +77,6 @@ export default class Category extends Component {
                 const filteredCategories = this.state.categories.filter((category) => {
                     return category._id !== categoryId
                 })
-
                 this.setState({
                     categories: filteredCategories
                 })

@@ -13,7 +13,9 @@ export default class Category extends Component {
             categories: [],
             config: {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            }
+            },
+            isUpdate: false,
+            categoryId: ''
 
         }
     }
@@ -35,14 +37,39 @@ export default class Category extends Component {
 
     submitCategory = (e) => {
         e.preventDefault()
-        Axios.post(`http://localhost:3001/categories`,
-            { name: this.state.categoryName }, this.state.config)
-            .then((response) => {
-                this.setState({
-                    categories: [...this.state.categories, response.data],
-                    categoryName: ''
-                })
-            }).catch((err) => console.log(err.response));
+        if (this.state.categoryName === '') {
+            this.setState({
+                isUpdate: false
+            })
+            return
+        }
+        if (this.state.isUpdate) {
+            Axios.put(`http://localhost:3001/categories/${this.state.categoryId}`,
+                { name: this.state.categoryName }, this.state.config)
+                .then((response) => {
+                    const updatedCategories = this.state.categories.map((category) => {
+                        if (category._id === this.state.categoryId) {
+                            category.name = this.state.categoryName
+                        }
+                        return category
+                    })
+                    this.setState({
+                        categories: updatedCategories,
+                        categoryName: '',
+                        isUpdate: false
+                    })
+                }).catch((err) => console.log(err.response))
+
+        } else {
+            Axios.post(`http://localhost:3001/categories`,
+                { name: this.state.categoryName }, this.state.config)
+                .then((response) => {
+                    this.setState({
+                        categories: [...this.state.categories, response.data],
+                        categoryName: ''
+                    })
+                }).catch((err) => console.log(err.response));
+        }
     }
 
     deleteCategory = (categoryId) => {
@@ -56,6 +83,15 @@ export default class Category extends Component {
                     categories: filteredCategories
                 })
             }).catch((err) => console.log(err.response));
+    }
+
+    handleEdit = (categoryId) => {
+        const choice = this.state.categories.find((category => category._id === categoryId))
+        this.setState({
+            categoryName: choice.name,
+            categoryId: categoryId,
+            isUpdate: true
+        })
     }
 
     render() {
@@ -77,7 +113,7 @@ export default class Category extends Component {
                         {
                             this.state.categories.map((category) => {
                                 return (<ListGroupItem key={category._id} color='info' className='d-flex justify-content-between align-items-center'>
-                                    {category.name}
+                                    <div onClick={() => this.handleEdit(category._id)}>{category.name}</div>
                                     <Button color='danger' size='sm' onClick={() => this.deleteCategory(category._id)}>Delete</Button>
                                 </ListGroupItem>)
                             })
